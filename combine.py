@@ -118,7 +118,8 @@ from scipy import sparse
 import math
 
 #---------------read image---------------------------------#
-image = imread('boom.jpeg', as_grey=True)
+image = imread('777min.png', as_grey=True)
+imageRGB = imread("777min.png")#,as_grey = True)
 
 #print(Reimage.size)
 #print(Reimage)
@@ -135,6 +136,7 @@ xx = int(1000/yy)
 
 #compress =[[0]*806]*506
 image1 = [[0 for i in range(yy)] for i in range(xx)]
+image1RGB = [[[0 for i in range(2)] for i in range(yy)] for i in range(xx)]
 #compress = np.array(compress)
 c_row = int(row/xx)
 c_col = int(col/yy)
@@ -142,19 +144,21 @@ c_col = int(col/yy)
 for x1 in range(0,xx):
     for y1 in range(0,yy):
         image1[x1][y1] = image[x1*c_row][y1*c_col]
+        image1RGB[x1][y1] = imageRGB[x1*c_row][y1*c_col]
 
 image1 = np.array(image1)
-
+image1RGB = np.array(image1RGB)
 
 x = np.resize(image1,(1,xx*yy))
 x = x[0]
 #----------------K-Means----------------------------------#
-num_clusters = 2  
+num_clusters = 2
 clf = KMeans(n_clusters=num_clusters)  #n_init=1, verbose=1)  
 clf.fit(x.reshape(-1,1))
 lable = clf.labels_
 #print(clf.labels_)
-#-----------calculate ai&bi-------------------------------#
+
+#-----------calculate ai&bi----------------------#
 center1 = np.around(clf.cluster_centers_[0][0],decimals = 5)
 center2 = np.around(clf.cluster_centers_[1][0],decimals = 5)
 print(center1)
@@ -164,9 +168,11 @@ bi = (x-center2)*(x-center2)
 print(ai)
 print('----------------------------')
 print(bi)
+
+
 #-----------------build graph------------------------------#
 bpgraph = [[0 for x in range(1002)] for y in range(1002) ]
-penalty = 0.01
+penalty = 0.005
 for pixel in range(0,x.size+1):
     if pixel%yy != 0:
         print(pixel, pixel-1)
@@ -198,15 +204,62 @@ for j in range(1,x.size+1):
 
 
 #-----------------print image-------------------#
-matlable = x.reshape(xx,yy)
-pyplot.imshow(matlable, interpolation='nearest')
+matlable = x.reshape(xx,yy,1)
+zero = [[[0 for i in range(2)]for i in range(yy)] for i in range(xx)]
+matlable1 = np.concatenate((matlable,zero), axis=2)
+
+for i in range(len(matlable)):
+    for j in range(int(matlable.size/len(matlable))):
+        #print("!",matlable[i][j])
+        if (matlable[i][j][0] == 1):
+            #flag = matlable[i][j].pop(0)
+            #matlable[i][j] = [0 for i in range(3)]
+            matlable1[i][j][0] = image1RGB[i][j][0]
+            matlable1[i][j][1] = image1RGB[i][j][1]
+            matlable1[i][j][2] = image1RGB[i][j][2]
+        else:
+            #flag = matlable[i][j].pop(0)
+            #matlable[i][j] = [0 for i in range(3)]
+            matlable1[i][j][0] = 255
+            matlable1[i][j][1] = 255
+            matlable1[i][j][2] = 255
+            #matlable[i][j] = [0 for i in range(3)]
+            #matlable[i][j] = np.array([255,255,255])
+print(matlable.size)
+
+matlable2 = matlable1.astype(np.uint8)
+
+pyplot.imshow(matlable2, interpolation='nearest')
+pyplot.show() 
+
+matlable3 = np.concatenate((matlable,zero), axis=2)
+
+for i in range(len(matlable)):
+    for j in range(int(matlable.size/len(matlable))):
+        #print("!",matlable[i][j])
+        if (matlable[i][j][0] == 0):
+            #flag = matlable[i][j].pop(0)
+            #matlable[i][j] = [0 for i in range(3)]
+            matlable3[i][j][0] = image1RGB[i][j][0]
+            matlable3[i][j][1] = image1RGB[i][j][1]
+            matlable3[i][j][2] = image1RGB[i][j][2]
+        else:
+            #flag = matlable[i][j].pop(0)
+            #matlable[i][j] = [0 for i in range(3)]
+            matlable3[i][j][0] = 255
+            matlable3[i][j][1] = 255
+            matlable3[i][j][2] = 255
+
+matlable4 = matlable3.astype(np.uint8)
+
+pyplot.imshow(matlable4, interpolation='nearest')
 pyplot.show() 
 #-----------------
-final = [[0 for i in range(col)] for i in range(row)]
-for i in range(xx):
-    for j in range(yy):
-        for k in range(c_row*i, c_row*i+c_row):
-            for m in range(c_col*j, c_col*j+c_col):
-                final[k][m] = matlable[i][j]
-pyplot.imshow(final, interpolation='nearest')
-pyplot.show()
+#final = [[0 for i in range(col)] for i in range(row)]
+#for i in range(xx):
+#    for j in range(yy):
+#        for k in range(c_row*i, c_row*i+c_row):
+#            for m in range(c_col*j, c_col*j+c_col):
+#                final[k][m] = matlable[i][j]
+#pyplot.imshow(final, interpolation='nearest')
+#pyplot.show()
