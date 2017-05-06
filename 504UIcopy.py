@@ -29,7 +29,7 @@ from collections import defaultdict
   
 #This class represents a directed graph using adjacency matrix representation
 
-path = "erhan.jpeg"
+path = "777min.png"
 a = []
 print(type(a))
 flag = 0
@@ -76,9 +76,9 @@ def seg():
         
     matlable = lable.reshape(row,col,1)
     if matlable[a[1]][a[0]][0] == 1:
-        fff = 1
-    else:
         fff = 0
+    else:
+        fff = 1
         
     zero = [[[0 for i in range(2)]for i in range(col)] for i in range(row)]
     matlable1 = np.concatenate((matlable,zero), axis=2)
@@ -138,7 +138,7 @@ def updateimage():
 if __name__=="__main__":
     global root
     root = Tk()
-    root.title("Xiaolizi~")
+    root.title("Image Segmentation")
     global path
     #photo = ImageTk.PhotoImage(file = "777.png")
     photo1 = ImageTk.PhotoImage(file = path)

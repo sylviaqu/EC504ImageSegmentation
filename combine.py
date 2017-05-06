@@ -171,8 +171,10 @@ print(bi)
 
 
 #-----------------build graph------------------------------#
+
+
 bpgraph = [[0 for x in range(1002)] for y in range(1002) ]
-penalty = 0.005
+penalty = 0.1
 for pixel in range(0,x.size+1):
     if pixel%yy != 0:
         print(pixel, pixel-1)
